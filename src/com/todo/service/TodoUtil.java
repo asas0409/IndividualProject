@@ -105,6 +105,14 @@ public class TodoUtil {
 		}
 	}
 	
+	public static void listAll(TodoList l, int check) {
+		int count = 0;
+		for (TodoItem item : l.getList(check)) {
+			System.out.println(item.toString());
+		}
+		System.out.println("총 " + count + "개의 항목이 완료되었습니다.");
+	}
+	
 	
 	public static void find(TodoList l, String keyword) {
 		int count = 0;
@@ -135,5 +143,10 @@ public class TodoUtil {
 		}
 		System.out.println("\n총 " + count + "개의 카테고리가 등록되어 있습니다.");
 		
+	}
+	
+	public static void completeItem(TodoList l,int index) {
+		if(l.completeItem(index)>0)
+			System.out.println("완료 체크하였습니다.");
 	}
 }

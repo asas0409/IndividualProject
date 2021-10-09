@@ -10,6 +10,7 @@ public class TodoItem {
     private String desc;
     private String current_date;
     private String due_date;
+    private int is_completed;
 
 
 	public TodoItem(String title, String desc){
@@ -19,12 +20,13 @@ public class TodoItem {
         this.current_date= f.format(new Date());
     }
     
-    public TodoItem(String category, String title, String desc, String due_date, String current_date){
+    public TodoItem(String category, String title, String desc, String due_date, String current_date,int is_completed){
         this.category = category;
     	this.title=title;
         this.desc=desc;
         this.due_date = due_date;
         this.current_date= current_date;
+        this.is_completed = is_completed;
     }
     
     public TodoItem(String title, String category, String desc, String due_date){
@@ -85,9 +87,20 @@ public class TodoItem {
 	public void setId(int id) {
 		this.id = id;
 	}
+		
+	public int getIs_completed() {
+		return is_completed;
+	}
+
+	public void setIs_completed(int is_completed) {
+		this.is_completed = is_completed;
+	}
+
 	@Override
 	public String toString() {
-		return id + " [" + category + "] " + title + " - " + desc + " - " + due_date + " - " + current_date;
+		String comp = "";
+		if(is_completed==1) comp = "[V]";
+		return id + " [" + category + "] " + title + comp + " - " + desc + " - " + due_date + " - " + current_date;
 	}
 
 	public String toSaveString() {

@@ -97,7 +97,8 @@ public class TodoList {
 				String description = rs.getString("memo");
 				String due_date = rs.getString("due_date");
 				String current_date = rs.getString("current_date");
-				TodoItem t = new TodoItem(category, title, description, due_date, current_date);
+				int is_completed = rs.getInt("is_completed");
+				TodoItem t = new TodoItem(category, title, description, due_date, current_date,is_completed);
 				t.setId(id);
 				list.add(t);
 
@@ -123,7 +124,34 @@ public class TodoList {
 				String description = rs.getString("memo");
 				String due_date = rs.getString("due_date");
 				String current_date = rs.getString("current_date");
-				TodoItem t = new TodoItem(category, title, description, due_date, current_date);
+				int is_completed = rs.getInt("is_completed");
+				TodoItem t = new TodoItem(category, title, description, due_date, current_date,is_completed);
+				t.setId(id);
+				list.add(t);
+			}
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	public ArrayList<TodoItem> getList(int check) {
+		ArrayList<TodoItem> list = new ArrayList<TodoItem>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			String sql = "select * from list where is_completed="+ check +";";
+			ResultSet rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				int id = rs.getInt("id");
+				String category = rs.getString("category");
+				String title = rs.getString("title");
+				String description = rs.getString("memo");
+				String due_date = rs.getString("due_date");
+				String current_date = rs.getString("current_date");
+				int is_completed = rs.getInt("is_completed");
+				TodoItem t = new TodoItem(category, title, description, due_date, current_date,is_completed);
 				t.setId(id);
 				list.add(t);
 			}
@@ -166,7 +194,8 @@ public class TodoList {
 				String description = rs.getString("memo");
 				String due_date = rs.getString("due_date");
 				String current_date = rs.getString("current_date");
-				TodoItem t = new TodoItem(category, title, description, due_date, current_date);
+				int is_completed = rs.getInt("is_completed");
+				TodoItem t = new TodoItem(category, title, description, due_date, current_date,is_completed);
 				t.setId(id);
 				list.add(t);
 			}
@@ -210,7 +239,8 @@ public class TodoList {
 				String description = rs.getString("memo");
 				String due_date = rs.getString("due_date");
 				String current_date = rs.getString("current_date");
-				TodoItem t = new TodoItem(category, title, description, due_date, current_date);
+				int is_completed = rs.getInt("is_completed");
+				TodoItem t = new TodoItem(category, title, description, due_date, current_date,is_completed);
 				t.setId(id);
 				list.add(t);
 			}
@@ -218,6 +248,22 @@ public class TodoList {
 			e.printStackTrace();
 		}
 		return list;
+	}
+	
+	public int completeItem(int index) {
+		String sql = "update list set is_completed=? where id = ?;";
+		PreparedStatement pstmt;
+		int check = 0;
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, 1);
+			pstmt.setInt(2, index);
+			check = pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return check;
 	}
 	
 	public Boolean isDuplicate(String title) {
