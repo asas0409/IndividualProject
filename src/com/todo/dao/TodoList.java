@@ -1,5 +1,6 @@
 package com.todo.dao;
 
+import java.sql.Connection;
 import java.util.*;
 
 import com.todo.service.TodoSortByDate;
@@ -7,10 +8,11 @@ import com.todo.service.TodoSortByDateReverse;
 import com.todo.service.TodoSortByName;
 
 public class TodoList {
-	private List<TodoItem> list;
-
+	Connection conn;
+	
+		
 	public TodoList() {
-		this.list = new ArrayList<TodoItem>();
+		this.conn = DbConnect.getConnection();
 	}
 
 	public void addItem(TodoItem t) {
