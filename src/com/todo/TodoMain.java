@@ -12,7 +12,7 @@ public class TodoMain {
 	
 		Scanner sc = new Scanner(System.in);
 		TodoList l = new TodoList();
-		l.importData("todolist.txt");
+		//l.importData("todolist.txt");
 		boolean quit = false;
 		Menu.displaymenu();
 		do {
@@ -52,9 +52,8 @@ public class TodoMain {
 				break;
 				
 			case "ls_date_desc" :
-			
 				System.out.println("날짜 역순으로 정렬하였습니다.");
-				
+				TodoUtil.listAll(l,"due_date",0);
 				break;
 				
 			case "ls_cate" :
@@ -82,5 +81,7 @@ public class TodoMain {
 				break;
 			}
 		} while (!quit);
+		l.disconnect();
 	}
+	
 }

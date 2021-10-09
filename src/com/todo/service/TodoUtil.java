@@ -92,14 +92,14 @@ public class TodoUtil {
 	}
 
 	public static void listAll(TodoList l) {
-		System.out.printf("[전체 목록, 총 %d개]", l.getCount());
+		System.out.printf("[전체 목록, 총 %d개]\n", l.getCount());
 		for (TodoItem item : l.getList()) {
 			System.out.println(item.toString());
 		}
 	}
 	
 	public static void listAll(TodoList l, String orderby, int ordering) {
-		System.out.printf("[전체 목록, 총 %d개]", l.getCount());
+		System.out.printf("[전체 목록, 총 %d개]\n", l.getCount());
 		for (TodoItem item : l.getOrderedList(orderby,ordering)) {
 			System.out.println(item.toString());
 		}
@@ -120,7 +120,7 @@ public class TodoUtil {
 		int count = 0;
 		
 		for(TodoItem item : l.getListCategory(keyword)) {
-			System.out.print(item.toString());
+			System.out.println(item.toString());
 			count++;
 		}
 		System.out.println("총 " + count + "개의 항목을 찾았습니다.");		

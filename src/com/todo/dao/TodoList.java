@@ -19,6 +19,15 @@ public class TodoList {
 	public TodoList() {
 		this.conn = DbConnect.getConnection();
 	}
+	
+	public void disconnect() {
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	public int addItem(TodoItem t) {
 		String sql = "insert into list (title, memo, category, current_date, due_date)" + " values (?,?,?,?,?);";
@@ -105,7 +114,7 @@ public class TodoList {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			String sql = "select * from list where title like %" + keyword + "% or memo like %" + keyword + "%;";
+			String sql = "select * from list where title like '%" + keyword + "%' or memo like '%" + keyword + "%';";
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				int id = rs.getInt("id");
@@ -148,7 +157,7 @@ public class TodoList {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			String sql = "select * from list where category like %" + keyword + "%;";
+			String sql = "select * from list where category like '%" + keyword + "%';";
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				int id = rs.getInt("id");
@@ -216,7 +225,7 @@ public class TodoList {
 		int count=0;
 		try {
 			stmt = conn.createStatement();
-			String sql = "select count(id) from list;";
+			String sql = "select count(id) from list where title='" + title + "';";
 			ResultSet rs = stmt.executeQuery(sql);
 			rs.next();
 			count = rs.getInt("count(id)");
