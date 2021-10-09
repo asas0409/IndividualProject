@@ -12,13 +12,11 @@ public class TodoMain {
 	
 		Scanner sc = new Scanner(System.in);
 		TodoList l = new TodoList();
-		boolean isList = false;
+		l.importData("todolist.txt");
 		boolean quit = false;
-		TodoUtil.loadList(l, "todolist.txt");
 		Menu.displaymenu();
 		do {
 			Menu.prompt();
-			isList = false;
 			String choice = sc.next();
 			switch (choice) {
 
@@ -39,28 +37,24 @@ public class TodoMain {
 				break;
 
 			case "ls_name_asc":
-				l.sortByName();
 				System.out.println("제목순으로 정렬하였습니다.");
-				isList = true;
+				TodoUtil.listAll(l,"title",1);
 				break;
 
 			case "ls_name_desc":
-				l.sortByName();
 				System.out.println("제목역순으로 정렬하였습니다.");
-				l.reverseList();
-				isList = true;
+				TodoUtil.listAll(l,"title",0);
 				break;
 				
 			case "ls_date":
-				l.sortByDate();
 				System.out.println("날짜순으로 정렬하였습니다.");
-				isList = true;
+				TodoUtil.listAll(l,"due_date",1);
 				break;
 				
 			case "ls_date_desc" :
-				l.sortByDateReverse();
+			
 				System.out.println("날짜 역순으로 정렬하였습니다.");
-				isList = true;
+				
 				break;
 				
 			case "ls_cate" :
@@ -87,9 +81,6 @@ public class TodoMain {
 				System.out.println("정확한 명령어를 입력하세요. (도움말 - help)");
 				break;
 			}
-			
-			if(isList) l.listAll();
 		} while (!quit);
-		TodoUtil.saveList(l, "todolist.txt");
 	}
 }
