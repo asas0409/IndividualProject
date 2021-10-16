@@ -185,7 +185,7 @@ public class TodoList {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			String sql = "select * from list where category like '%" + keyword + "%';";
+			String sql = "select * from list where category='" + keyword + "%';";
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				int id = rs.getInt("id");
