@@ -14,7 +14,7 @@ public class TodoUtil {
 	
 	public static void createItem(TodoList list) {
 		
-		String category, title, desc, due_date;
+		String category, title, desc, due_date, remark,importance;
 		Scanner sc = new Scanner(System.in);
 		
 		System.out.println("[항목 추가]");
@@ -37,7 +37,14 @@ public class TodoUtil {
 		System.out.print("마감일자 >> ");
 		due_date = sc.next();
 		
-		TodoItem t = new TodoItem(title, category, desc, due_date);
+		sc.nextLine();
+		System.out.print("비고 >> ");
+		remark = sc.nextLine().trim();
+		
+		System.out.print("중요도 >> ");
+		importance = sc.next().trim();
+		
+		TodoItem t = new TodoItem(title, category, desc, due_date,remark,importance);
 		if(list.addItem(t)>0)
 			System.out.println("추가되었습니다.");
 	}
@@ -48,10 +55,18 @@ public class TodoUtil {
 
 		System.out.println("[항목 삭제]");
 		System.out.print("삭제할 항목의 번호를 입력하시오 >> ");
-		int del_num = sc.nextInt();
-		if(l.deleteItem(del_num)>0) {
-			System.out.println("삭제되었습니다.");
+		String del_num = sc.nextLine().trim();
+		int num = l.deleteItem(del_num);
+		if(num>0) {
+			System.out.println(num + "개의 항목이 삭제되었습니다.");
 		}	
+	}
+	
+	public static void del_comp(TodoList l) {
+		int num = l.deleteComp();
+		if(num>0) {
+			System.out.println(num + "개의 항목이 삭제되었습니다.");
+		}
 	}
 
 
@@ -82,7 +97,14 @@ public class TodoUtil {
 		System.out.print("새 마감일자 >> ");
 		String new_due_date = sc.next().trim();
 		
-		TodoItem t = new TodoItem(new_title, new_category ,new_description, new_due_date);
+		sc.nextLine();
+		System.out.print("새 비고 >> ");
+		String new_remark = sc.nextLine().trim();
+		
+		System.out.print("새 중요도 >> ");
+		String new_importance = sc.next().trim();
+		
+		TodoItem t = new TodoItem(new_title, new_category ,new_description, new_due_date,new_remark, new_importance);
 		t.setId(update_num);
 		if(l.editItem(t)>0)
 			System.out.println("수정되었습니다.");
@@ -113,6 +135,15 @@ public class TodoUtil {
 		System.out.println("총 " + count + "개의 항목이 완료되었습니다.");
 	}
 	
+	public static void ls_importance(TodoList l, String importance) {
+		int count = 0;
+		
+		for(TodoItem item : l.getImportanceList(importance)) {
+			System.out.println(item.toString());
+			count++;
+		}
+		System.out.println("총 " + count + "개의 항목을 찾았습니다.");		
+	}
 	
 	public static void find(TodoList l, String keyword) {
 		int count = 0;
@@ -145,8 +176,9 @@ public class TodoUtil {
 		
 	}
 	
-	public static void completeItem(TodoList l,int index) {
-		if(l.completeItem(index)>0)
-			System.out.println("완료 체크하였습니다.");
+	public static void completeItem(TodoList l,String index) {
+		int num = l.completeItem(index);
+		if(num>0)
+			System.out.println(num + "개의 항목을 완료 체크하였습니다.");
 	}
 }

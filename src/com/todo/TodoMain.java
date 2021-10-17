@@ -69,11 +69,19 @@ public class TodoMain {
 				break;
 				
 			case "comp" :
-				TodoUtil.completeItem(l,sc.nextInt());
+				TodoUtil.completeItem(l,sc.nextLine().trim());
 				break;
 			
 			case "ls_comp" :
 				TodoUtil.listAll(l,1);
+				break;
+				
+			case "del_comp" :
+				TodoUtil.del_comp(l);
+				break;
+				
+			case "ls_importance" :
+				TodoUtil.ls_importance(l, sc.next());
 				break;
 				
 			case "help" :

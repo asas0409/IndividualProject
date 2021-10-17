@@ -11,6 +11,8 @@ public class TodoItem {
     private String current_date;
     private String due_date;
     private int is_completed;
+    private String remark;
+    private String importance;
 
 
 	public TodoItem(String title, String desc){
@@ -20,22 +22,26 @@ public class TodoItem {
         this.current_date= f.format(new Date());
     }
     
-    public TodoItem(String category, String title, String desc, String due_date, String current_date,int is_completed){
+    public TodoItem(String category, String title, String desc, String due_date, String current_date,int is_completed, String remark, String importance){
         this.category = category;
     	this.title=title;
         this.desc=desc;
         this.due_date = due_date;
         this.current_date= current_date;
         this.is_completed = is_completed;
+        this.remark = remark;
+        this.importance = importance;
     }
     
-    public TodoItem(String title, String category, String desc, String due_date){
+    public TodoItem(String title, String category, String desc, String due_date,String remark,String importance){
         this.title=title;
         this.category = category;
         this.desc=desc;
         SimpleDateFormat f = new SimpleDateFormat("yyyy/MM/dd kk:mm:ss");
         this.current_date= f.format(new Date());
         this.due_date = due_date;
+        this.remark = remark;
+        this.importance = importance;
     }
     
     
@@ -95,12 +101,34 @@ public class TodoItem {
 	public void setIs_completed(int is_completed) {
 		this.is_completed = is_completed;
 	}
+	
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	
+	public String getImportance() {
+		return importance;
+	}
+
+	public void setImportance(String importance) {
+		this.importance = importance;
+	}
 
 	@Override
 	public String toString() {
 		String comp = "";
+		String toReturn = "";
 		if(is_completed==1) comp = "[V]";
-		return id + " [" + category + "] " + title + comp + " - " + desc + " - " + due_date + " - " + current_date;
+		toReturn =  id + " [" + category + "] " + title + comp + " - " + desc + " - " + due_date + " - " + current_date + " - �߿䵵:" + importance;
+		if(!remark.equals("")) 
+			toReturn += " (" + remark +")";
+		return toReturn;
 	}
 
 	public String toSaveString() {

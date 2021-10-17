@@ -18,6 +18,8 @@ public class Menu {
         System.out.println("find_cate <키워드> - 카테고리에서 키워드 검색");
         System.out.println("comp <번호> - 항목 완료 처리");
         System.out.println("ls_comp - 완료된 항목만 출력");
+        System.out.println("del_comp - 완료된 항목만 삭제");
+        System.out.println("ls_importance <중요도> - 중요도가 일치하는 항목 출력");
         System.out.println("exit - 종료");
     }
     

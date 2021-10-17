@@ -30,33 +30,69 @@ public class TodoList {
 	}
 
 	public int addItem(TodoItem t) {
-		String sql = "insert into list (title, memo, category, current_date, due_date)" + " values (?,?,?,?,?);";
+		Statement stmt1;
+		Statement stmt2;
+		Statement stmt3;
+		String sql = "insert into list (title, memo, category, current_date, due_date, remark, importance)" + " values (?,?,?,?,?,?,?);";
 		PreparedStatement pstmt;
+		int count = 0;
 		int check = 0;
 		try {
+			stmt1 = conn.createStatement();
+			String sql1 = "select count(id) from category where category = '" + t.getCategory() + "';";
+			ResultSet rs = stmt1.executeQuery(sql1);
+			rs.next();
+			count = rs.getInt("count(id)");
+			stmt1.close();
+			if(!(count > 0)) {
+				stmt2 = conn.createStatement();
+				String sql2 = "insert into category (category) values ('" + t.getCategory() + "');";
+				stmt2.executeUpdate(sql2);
+				stmt2.close();
+			}
+			stmt3 = conn.createStatement();
+			String sql3 = "select id from category where category='"+t.getCategory()+"';";
+			ResultSet rs3 = stmt3.executeQuery(sql3);
+			rs3.next();
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, t.getTitle());
 			pstmt.setString(2, t.getDesc());
-			pstmt.setString(3, t.getCategory());
+			pstmt.setInt(3, rs3.getInt("id"));
 			pstmt.setString(4, t.getCurrent_date());
 			pstmt.setString(5, t.getDue_date());
+			pstmt.setString(6, t.getRemark());
+			pstmt.setString(7, t.getImportance());
 			check = pstmt.executeUpdate();
 			pstmt.close();
+			stmt3.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return check;
 	}
 
-	public int deleteItem(int index) {
-		String sql = "delete from list where id=?;";
-		PreparedStatement pstmt;
+	public int deleteItem(String index) {
+		Statement stmt;
+		String sql = "delete from list where id in (" + index +");";
 		int check = 0;
 		try {
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, index);
-			check = pstmt.executeUpdate();
-			pstmt.close();
+			stmt = conn.createStatement();
+			check = stmt.executeUpdate(sql);
+			stmt.close();
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return check;
+	}
+	
+	public int deleteComp() {
+		Statement stmt;
+		String sql = "delete from list where is_completed = 1;";
+		int check = 0;
+		try {
+			stmt = conn.createStatement();
+			check = stmt.executeUpdate(sql);
+			stmt.close();
 		}catch(SQLException e) {
 			e.printStackTrace();
 		}
@@ -64,19 +100,41 @@ public class TodoList {
 	}
 
 	public int editItem(TodoItem t) {
-		String sql = "update list set title=?, memo=?, category=?, current_date=?, due_date=? where id = ?;";
+		Statement stmt1;
+		Statement stmt2;
+		Statement stmt3;
+		String sql = "update list set title=?, memo=?, category=?, current_date=?, due_date=?, remark=?, importance=? where id = ?;";
 		PreparedStatement pstmt;
 		int check = 0;
 		try {
+			stmt1 = conn.createStatement();
+			String sql1 = "select count(id) from category where category = '" + t.getCategory() + "';";
+			ResultSet rs = stmt1.executeQuery(sql1);
+			rs.next();
+			int count = rs.getInt("count(id)");
+			stmt1.close();
+			if(!(count > 0)) {
+				stmt2 = conn.createStatement();
+				String sql2 = "insert into category (category) values ('" + t.getCategory() + "');";
+				stmt2.executeUpdate(sql2);
+				stmt2.close();
+			}
+			stmt3 = conn.createStatement();
+			String sql3 = "select id from category where category='"+t.getCategory()+"';";
+			ResultSet rs3 = stmt3.executeQuery(sql3);
+			rs3.next();
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, t.getTitle());
 			pstmt.setString(2, t.getDesc());
-			pstmt.setString(3, t.getCategory());
+			pstmt.setInt(3, rs3.getInt("id"));
 			pstmt.setString(4, t.getCurrent_date());
 			pstmt.setString(5, t.getDue_date());
-			pstmt.setInt(6, t.getId());
+			pstmt.setString(6, t.getRemark());
+			pstmt.setString(7, t.getImportance());
+			pstmt.setInt(8, t.getId());
 			check = pstmt.executeUpdate();
 			pstmt.close();
+			stmt3.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -88,7 +146,7 @@ public class TodoList {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			String sql = "select * from list;";
+			String sql = "select list.id, category.category, list.title, list.memo, list.due_date, list.current_date, list.is_completed, list.remark, list.importance from list inner join category on list.category = category.id;";
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				int id = rs.getInt("id");
@@ -98,7 +156,9 @@ public class TodoList {
 				String due_date = rs.getString("due_date");
 				String current_date = rs.getString("current_date");
 				int is_completed = rs.getInt("is_completed");
-				TodoItem t = new TodoItem(category, title, description, due_date, current_date,is_completed);
+				String remark = rs.getString("remark");
+				String importance = rs.getString("importance");
+				TodoItem t = new TodoItem(category, title, description, due_date, current_date,is_completed,remark,importance);
 				t.setId(id);
 				list.add(t);
 
@@ -115,7 +175,7 @@ public class TodoList {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			String sql = "select * from list where title like '%" + keyword + "%' or memo like '%" + keyword + "%';";
+			String sql = "select list.id, category.category, list.title, list.memo, list.due_date, list.current_date, list.is_completed, list.remark, list.importance from list inner join category on list.category = category.id where title like '%" + keyword + "%' or memo like '%" + keyword + "%';";
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				int id = rs.getInt("id");
@@ -125,7 +185,9 @@ public class TodoList {
 				String due_date = rs.getString("due_date");
 				String current_date = rs.getString("current_date");
 				int is_completed = rs.getInt("is_completed");
-				TodoItem t = new TodoItem(category, title, description, due_date, current_date,is_completed);
+				String remark = rs.getString("remark");
+				String importance = rs.getString("importance");
+				TodoItem t = new TodoItem(category, title, description, due_date, current_date,is_completed,remark,importance);
 				t.setId(id);
 				list.add(t);
 			}
@@ -141,7 +203,7 @@ public class TodoList {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			String sql = "select * from list where is_completed="+ check +";";
+			String sql = "select list.id, category.category, list.title, list.memo, list.due_date, list.current_date, list.is_completed, list.remark, list.importance from list inner join category on list.category = category.id where is_completed="+ check +";";
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				int id = rs.getInt("id");
@@ -151,7 +213,37 @@ public class TodoList {
 				String due_date = rs.getString("due_date");
 				String current_date = rs.getString("current_date");
 				int is_completed = rs.getInt("is_completed");
-				TodoItem t = new TodoItem(category, title, description, due_date, current_date,is_completed);
+				String remark = rs.getString("remark");
+				String importance = rs.getString("importance");
+				TodoItem t = new TodoItem(category, title, description, due_date, current_date,is_completed,remark,importance);
+				t.setId(id);
+				list.add(t);
+			}
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	public ArrayList<TodoItem> getImportanceList(String imp) {
+		ArrayList<TodoItem> list = new ArrayList<TodoItem>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			String sql = "select list.id, category.category, list.title, list.memo, list.due_date, list.current_date, list.is_completed, list.remark, list.importance from list inner join category on list.category = category.id where importance='"+ imp +"';";
+			ResultSet rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				int id = rs.getInt("id");
+				String category = rs.getString("category");
+				String title = rs.getString("title");
+				String description = rs.getString("memo");
+				String due_date = rs.getString("due_date");
+				String current_date = rs.getString("current_date");
+				int is_completed = rs.getInt("is_completed");
+				String remark = rs.getString("remark");
+				String importance = rs.getString("importance");
+				TodoItem t = new TodoItem(category, title, description, due_date, current_date,is_completed,remark,importance);
 				t.setId(id);
 				list.add(t);
 			}
@@ -167,7 +259,7 @@ public class TodoList {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			String sql = "select distinct category from list";
+			String sql = "select distinct category.category from category inner join list on category.id = list.category";
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				String category = rs.getString("category");
@@ -185,7 +277,7 @@ public class TodoList {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			String sql = "select * from list where category='" + keyword + "%';";
+			String sql = "select list.id, category.category, list.title, list.memo, list.due_date, list.current_date, list.is_completed, list.remark, list.importance from list inner join category on list.category = category.id where category.category='" + keyword + "';";
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				int id = rs.getInt("id");
@@ -195,7 +287,9 @@ public class TodoList {
 				String due_date = rs.getString("due_date");
 				String current_date = rs.getString("current_date");
 				int is_completed = rs.getInt("is_completed");
-				TodoItem t = new TodoItem(category, title, description, due_date, current_date,is_completed);
+				String remark = rs.getString("remark");
+				String importance = rs.getString("importance");
+				TodoItem t = new TodoItem(category, title, description, due_date, current_date,is_completed,remark,importance);
 				t.setId(id);
 				list.add(t);
 			}
@@ -227,7 +321,7 @@ public class TodoList {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			String sql = "select * from list order by " + orderby;
+			String sql = "select list.id, category.category, list.title, list.memo, list.due_date, list.current_date, list.is_completed, list.remark, list.importance from list inner join category on list.category = category.id order by " + orderby;
 			if (ordering==0) {
 				sql += " desc";
 			}
@@ -240,7 +334,9 @@ public class TodoList {
 				String due_date = rs.getString("due_date");
 				String current_date = rs.getString("current_date");
 				int is_completed = rs.getInt("is_completed");
-				TodoItem t = new TodoItem(category, title, description, due_date, current_date,is_completed);
+				String remark = rs.getString("remark");
+				String importance = rs.getString("importance");
+				TodoItem t = new TodoItem(category, title, description, due_date, current_date,is_completed,remark,importance);
 				t.setId(id);
 				list.add(t);
 			}
@@ -250,16 +346,14 @@ public class TodoList {
 		return list;
 	}
 	
-	public int completeItem(int index) {
-		String sql = "update list set is_completed=? where id = ?;";
-		PreparedStatement pstmt;
+	public int completeItem(String index) {
+		Statement stmt;
+		String sql = "update list set is_completed=1 where id in (" + index +");";
 		int check = 0;
 		try {
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, 1);
-			pstmt.setInt(2, index);
-			check = pstmt.executeUpdate();
-			pstmt.close();
+			stmt = conn.createStatement();
+			check = stmt.executeUpdate(sql);
+			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
