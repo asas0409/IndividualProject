@@ -131,6 +131,7 @@ public class TodoUtil {
 		int count = 0;
 		for (TodoItem item : l.getList(check)) {
 			System.out.println(item.toString());
+			count++;
 		}
 		System.out.println("총 " + count + "개의 항목이 완료되었습니다.");
 	}
